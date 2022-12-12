@@ -1,39 +1,12 @@
 import React, {useEffect, useState} from 'react'
 import classNames from "classnames"
-import io from 'socket.io-client'
-
-const NO_PLAYER = 0
-const PLAYER_ONE = 1
-const PLAYER_TWO = 2
-const MAX_SCORE = 4
-
-const PLAYER_NAME = {
-  [PLAYER_ONE]: 'Red',
-  [PLAYER_TWO]: 'Blue'
-}
-
-
-
-const socket = io()
+import {PLAYER_COLORS} from "../../constants";
 
 const ConnectedBoard = ({rows = 7, columns = 7, data = [], onChooseTile, room}) => {
   // Player one starts playing ever
-  const [player, setPlayer] = useState(PLAYER_ONE)
   const [moveCount, setMoveCount] = useState(0)
   const [emptySpots, setEmptySpots] = useState([])
-  const [winner, setWinner] = useState(null)
-  const [playerColors, setPlayerColors] = useState({})
-
-  const initializeBoardColors = (room) => {
-    setPlayerColors({
-      [room?.player2]: 'bg-red-500',
-      [room?.player1]: 'bg-blue-500'
-    })
-  }
-
-  useEffect(() => {
-    initializeBoardColors(room)
-  }, [room])
+  const {turn} = room || {}
 
   useEffect(() => {
     if (!data.length) {
@@ -41,13 +14,9 @@ const ConnectedBoard = ({rows = 7, columns = 7, data = [], onChooseTile, room}) 
     }
   }, [])
 
-  useEffect(() => {
-    initializeEmptySpots()
-  }, [winner])
-
-  useEffect(() => {
-
-  }, [player])
+  // useEffect(() => {
+  //   initializeEmptySpots()
+  // }, [winner])
 
   const initializeEmptySpots = () => {
     setEmptySpots([])
@@ -81,25 +50,21 @@ const ConnectedBoard = ({rows = 7, columns = 7, data = [], onChooseTile, room}) 
       if (isRight) tile = data[x].lastIndexOf(null)
     }
 
-    updatedBoardArray[x][tile] = player
+    updatedBoardArray[x][tile] = turn
 
     onChooseTile(x, tile)
 
-    // setEmptySpots(updatedEmptySpots)
     setMoveCount(moveCount + 1)
-    // if (player === PLAYER_ONE) setPlayer(PLAYER_TWO)
-    // if (player === PLAYER_TWO) setPlayer(PLAYER_ONE)
   }
 
   return (
     <>
-      {winner && <span>{PLAYER_NAME[winner]} Wins!</span>}
       <div className={classNames(`mx-auto max-w-2xl grid grid-rows-${rows} grid-cols-${columns}`)}>
         {data.map((row, x) => row.map((tile, y) => (
           <div
             className={
               classNames(
-                'w-20 h-20 border m-2 rounded-full', playerColors[data[x][y]]
+                'w-20 h-20 border m-2 rounded-full', PLAYER_COLORS[data[x][y]]
               )
             }
             onClick={() => setTile(x, y)}>

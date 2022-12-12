@@ -1,8 +1,6 @@
 import React, {useState} from 'react';
-import io from "socket.io-client";
-const socket = io('http://localhost:7777')
 
-const RoomDetails = ({room, onCreateRoom, onFindRoom}) => {
+const RoomDetails = ({room, onCreateRoom, onFindRoom, player}) => {
   const [roomSettings, setRoomSettings] = useState({
     name: '',
     rows: 7,
@@ -29,11 +27,11 @@ const RoomDetails = ({room, onCreateRoom, onFindRoom}) => {
             <div>
               <div className="flex flex-row items-center">
                 <div className="bg-blue-500 w-3 h-3 rounded-full mr-4"/>
-                <p>{room.player1 ?? 'Connecting...'}</p>
+                <p>{room.player1 ?? 'Connecting...'} <b>{room?.player1 === player && '(You)'}</b></p>
               </div>
               <div className="flex flex-row items-center">
                 <div className="bg-red-500 w-3 h-3 rounded-full mr-4"/>
-                <p>{room.player2 ?? 'Waiting player 2...'}</p>
+                <p>{room.player2 ?? 'Waiting player 2...'} <b>{room?.player2 === player && '(You)'}</b></p>
               </div>
             </div>
           </>
@@ -61,7 +59,7 @@ const RoomDetails = ({room, onCreateRoom, onFindRoom}) => {
                 <input onChange={onChangeSettings} name="score" className="mx-auto px-4 py-2 border my-2 rounded-lg" type="number" defaultValue={roomSettings['score']} placeholder="Winner score"/>
               </div>
 
-              <button className="mx-auto text-white px-4 py-2 bg-blue-500 rounded-lg">Create room</button>
+              <button type="submit" className="mx-auto text-white px-4 py-2 bg-blue-500 rounded-lg">Create room</button>
 
             </form>
 
